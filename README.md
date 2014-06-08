@@ -1,7 +1,13 @@
 cron
 ====
 
-[![GoDoc](http://godoc.org/github.com/tmaiaroto/cron?status.png)](http://godoc.org/github.com/tmaiaroto/cron)
+[![GoDoc](http://godoc.org/github.com/tmaiaroto/cron?status.png)](http://godoc.org/github.com/tmaiaroto/cron) [![Build Status](https://drone.io/github.com/tmaiaroto/cron/status.png)](https://drone.io/github.com/tmaiaroto/cron/latest) [![Coverage Status](https://coveralls.io/repos/tmaiaroto/cron/badge.png)](https://coveralls.io/r/tmaiaroto/cron)
+
+Originally authored by [robfig](https://github.com/robfig)
+[https://github.com/robfig/cron](https://github.com/robfig/cron)
+
+This fork includes a few cherry picked additions from various authors including [ghzofhit](https://github.com/ghzofhit/cron/commit/45ae29328dc71ca69d631238b2f7670c2f81310a) and [unrolled](https://github.com/unrolled/cron/commit/742408e17ed38fe46c3a72716545b4c67c9b8a3b).
+Namely, the new features add IDs and names to entries so that they can be identified and removed later. One might even expose this capability to a RESTful API so that jobs could be dynamically managed from outside of the code.
 
 ## Usage
 

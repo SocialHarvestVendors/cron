@@ -111,10 +111,31 @@ func TestMultipleEntries(t *testing.T) {
 	wg.Add(2)
 
 	cron := New()
-	cron.AddFunc("0 0 0 1 1 ?", func() {})
-	cron.AddFunc("* * * * * ?", func() { wg.Done() })
+	cron.AddFunc("0 0 0 1 1 ?", func() {}, "test job name")
+	id, err := cron.AddFunc("* * * * * ?", func() { wg.Done() }, "first job name", "second job name ignored")
+	if err != nil {
+		t.FailNow()
+	}
 	cron.AddFunc("0 0 0 31 12 ?", func() {})
 	cron.AddFunc("* * * * * ?", func() { wg.Done() })
+
+	var foundId int64
+	foundId = int64(0)
+	var foundName = "not found"
+	for _, entry := range cron.Entries() {
+		if entry.Id == id {
+			foundId = entry.Id
+			foundName = entry.Name
+		}
+	}
+	if id != foundId {
+		t.Errorf("Job not found.  (expected) %s != %s (actual)", id, foundId)
+		t.Fail()
+	}
+	if "first job name" != foundName {
+		t.Errorf("Job name not found.  (expected) %s != %s (actual)", "first job name", foundName)
+		t.Fail()
+	}
 
 	cron.Start()
 	defer cron.Stop()
