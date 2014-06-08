@@ -50,6 +50,9 @@ type Entry struct {
 
 	// The Job id
 	Id int64
+
+	// Optional name
+	Name string
 }
 
 // byTime is a wrapper for sorting the entry array by time
@@ -90,8 +93,8 @@ type FuncJob func()
 func (f FuncJob) Run() { f() }
 
 // AddFunc adds a func to the Cron to be run on the given schedule.
-func (c *Cron) AddFunc(spec string, cmd func()) (_ int64, err error) {
-	return c.AddJob(spec, FuncJob(cmd))
+func (c *Cron) AddFunc(spec string, cmd func(), name ...string) (_ int64, err error) {
+	return c.AddJob(spec, FuncJob(cmd), name...)
 }
 
 func (c *Cron) DelJob(id int64) {
@@ -107,21 +110,26 @@ func (c *Cron) DelJob(id int64) {
 }
 
 // AddFunc adds a Job to the Cron to be run on the given schedule.
-func (c *Cron) AddJob(spec string, cmd Job) (_ int64, err error) {
+func (c *Cron) AddJob(spec string, cmd Job, name ...string) (_ int64, err error) {
 	schedule, err := Parse(spec)
 	if err != nil {
 		return 0, err
 	}
-	return c.Schedule(schedule, cmd), err
+	return c.Schedule(schedule, cmd, name...), err
 }
 
 // Schedule adds a Job to the Cron to be run on the given schedule.
-func (c *Cron) Schedule(schedule Schedule, cmd Job) int64 {
+func (c *Cron) Schedule(schedule Schedule, cmd Job, name ...string) int64 {
 	c.increment = c.increment + 1
+	var jobName string
+	if len(name) > 0 {
+		jobName = name[0]
+	}
 	entry := &Entry{
 		Schedule: schedule,
 		Job:      cmd,
 		Id:       c.increment,
+		Name:     jobName,
 	}
 	if !c.running {
 		c.entries = append(c.entries, entry)
@@ -218,6 +226,8 @@ func (c *Cron) entrySnapshot() []*Entry {
 			Next:     e.Next,
 			Prev:     e.Prev,
 			Job:      e.Job,
+			Id:       e.Id,
+			Name:     e.Name,
 		})
 	}
 	return entries
