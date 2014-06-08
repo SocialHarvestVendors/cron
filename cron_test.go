@@ -67,7 +67,7 @@ func TestDelBeforeRunning(t *testing.T) {
 	wg.Add(1)
 
 	cron := New()
-	id := cron.AddFunc("*/5 * * * * ?", func() { wg.Done() })
+	id, err := cron.AddFunc("*/5 * * * * ?", func() { wg.Done() })
 	cron.AddFunc("0 0 0 1 1 ?", func() {})
 	cron.DelJob(id)
 	cron.Start()
@@ -105,7 +105,7 @@ func TestDelWhileRunning(t *testing.T) {
 	wg.Add(1)
 
 	cron := New()
-	id := cron.AddFunc("*/5 * * * * ?", func() { wg.Done() })
+	id, err := cron.AddFunc("*/5 * * * * ?", func() { wg.Done() })
 	cron.AddFunc("0 0 0 1 1 ?", func() {})
 	cron.Start()
 	cron.DelJob(id)
